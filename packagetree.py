@@ -27,8 +27,9 @@ class PackageTree(object):
     def __init__(self, module, root=None, directory=None):
         self.module = module
         self.root = root
-        directory = directory or ""
-        self.directory = "{}/{}".format(directory, self.module)
+        self.directory = self.module
+        if directory is not None:
+            self.directory = "{}/{}".format(directory, self.module)
 
         self.subpackages = {}
         self.classes = self.__import_classes()
@@ -73,6 +74,23 @@ class PackageTree(object):
             )
         )
 
+    def _filter_directories(self, root):
+        all_subfolders = [x for x in root.glob('**/')]
+
+        # Folders that aren't packages should be ignored.
+        allowed_folders = []
+        for folder in all_subfolders:
+            if '__init__.py' in os.listdir(folder):
+                allowed_folders.append(folder)
+
+        # The root path may appear in the list of paths.
+        try:
+            allowed_folders.remove(root)
+        except ValueError:
+            pass
+
+        return allowed_folders
+        
     def _gather_subpackages(self):
         """
         Search a specific folder and its subfolders for Class objects.
@@ -88,19 +106,7 @@ class PackageTree(object):
         """
         # Get all the subfolders of the root.
         root = pathlib.Path(self.directory)
-        all_subfolders = [x for x in root.glob('**/')]
-
-        # Folders that aren't packages should be ignored.
-        allowed_folders = []
-        for folder in all_subfolders:
-            if '__init__.py' in os.listdir(folder):
-                allowed_folders.append(folder)
-
-        # The root path may appear in the list of paths.
-        try:
-            allowed_folders.remove(root)
-        except ValueError:
-            pass
+        allowed_folders = self._filter_directories(root)
 
         # If the root was a relative python path, split it into parts.
         root_parts = self.directory.split('/')
