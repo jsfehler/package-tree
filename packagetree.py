@@ -35,6 +35,12 @@ class PackageTree(object):
 
         self._gather_subpackages()
 
+    def __repr__(self):
+        m = self.module
+        r = self.root
+        d = self.directory
+        return f"PackageTree(module={m}, root={r}, directory={d})"
+
     def __import_classes(self):
         """Imports a module, inspects the Classes in the modules,
         then returns a dictionary containing them.
