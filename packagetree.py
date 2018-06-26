@@ -27,8 +27,9 @@ class PackageTree(object):
     def __init__(self, module, root=None, directory=None):
         self.module = module
         self.root = root
-        directory = directory or ""
-        self.directory = "{}/{}".format(directory, self.module)
+        self.directory = self.module
+        if directory is not None:
+            self.directory = "{}/{}".format(directory, self.module)
 
         if root is not None:
             self.module = ".{}".format(module)
@@ -126,6 +127,12 @@ class PackageTree(object):
         # If the root was a relative python path, split it into parts.
         root_parts = self.directory.split('/')
 
+        if len(root_parts) > 2:
+            new_root = ".".join(root_parts[1:])
+        else:
+            # If the directory was at a top level, it won't have multiple parts.
+            new_root = ".".join(root_parts)
+        
         for path in allowed_folders:
             parts = list(path.parts)
             for part in root_parts:
@@ -135,7 +142,7 @@ class PackageTree(object):
 
             child_container = PackageTree(
                 module=parts,
-                root=".".join(root_parts[1:]),
+                root=new_root,
                 directory=self.directory
             )
 
