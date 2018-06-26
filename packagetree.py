@@ -30,6 +30,9 @@ class PackageTree(object):
         directory = directory or ""
         self.directory = "{}/{}".format(directory, self.module)
 
+        if root is not None:
+            self.module = ".{}".format(module)
+
         self.subpackages = {}
         self.classes = self.__import_classes()
 
@@ -85,13 +88,14 @@ class PackageTree(object):
         Args:
             root - A pathlib.Path object.
         """
-        all_subfolders = [x for x in root.glob('**/')]
+        all_subfolders = [x for x in root.glob('*/')]
 
         # Folders that aren't packages should be ignored.
         allowed_folders = []
         for folder in all_subfolders:
-            if '__init__.py' in os.listdir(folder):
-                allowed_folders.append(folder)
+            if folder.is_dir():
+                if '__init__.py' in os.listdir(folder):
+                    allowed_folders.append(folder)
 
         # The root path may appear in the list of paths.
         # We don't need it, since classes from the root are imported on init.
@@ -101,7 +105,7 @@ class PackageTree(object):
             pass
 
         return allowed_folders
-        
+
     def _gather_subpackages(self):
         """
         Search a specific folder and its subfolders for Class objects.
@@ -130,8 +134,9 @@ class PackageTree(object):
             parts = '.'.join(parts)
 
             child_container = PackageTree(
-                module='.{}'.format(parts),
-                root=self.module
+                module=parts,
+                root=".".join(root_parts[1:]),
+                directory=self.directory
             )
 
             # Add each subfolder as a child of this PackageTree.
