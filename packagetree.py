@@ -24,13 +24,19 @@ class PackageTree(object):
         directory - Directory where the package is located,
             relative to the current working directory.
     """
-    def __init__(self, module, root=None, directory=None):
+    def __init__(self, module, root=None, directory=None, top=False):
         self.module = module
         self.root = root
-        self.directory = self.module
-        if directory is not None:
+        self.directory = directory
+        if top:
             self.directory = "{}/{}".format(directory, self.module)
 
+        # full_directory is used to glob for valid python packages.
+        self.full_directory = self.module
+        if directory is not None:
+            self.full_directory = "{}/{}".format(
+                directory, self.module).replace('.', '/')
+            
         if root is not None:
             self.module = ".{}".format(module)
 
@@ -121,18 +127,22 @@ class PackageTree(object):
         child Container relative to the subfolder's root.
         """
         # Get all the subfolders of the root.
-        root = pathlib.Path(self.directory)
+        root = pathlib.Path(self.full_directory)
         allowed_folders = self._filter_directories(root)
 
         # If the root was a relative python path, split it into parts.
-        root_parts = self.directory.split('/')
-
-        if len(root_parts) > 2:
-            new_root = ".".join(root_parts[1:])
+        if self.directory is not None:
+            root_parts = self.directory.split('/')
         else:
-            # If the directory was at a top level, it won't have multiple parts.
-            new_root = ".".join(root_parts)
-        
+            root_parts = [self.module]
+
+        # The root should always trim off the first part of the path.
+        # If the directory was at a top level, it won't have multiple parts.
+        if len(root_parts) > 1:
+            new_root_parts = root_parts[1:]
+        else:
+            new_root_parts = root_parts
+
         for path in allowed_folders:
             parts = list(path.parts)
             for part in root_parts:
@@ -142,8 +152,8 @@ class PackageTree(object):
 
             child_container = PackageTree(
                 module=parts,
-                root=new_root,
-                directory=self.directory
+                root=".".join(new_root_parts),
+                directory=self.full_directory
             )
 
             # Add each subfolder as a child of this PackageTree.
