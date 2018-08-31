@@ -1,7 +1,7 @@
-class ClassB(object):
+class ClassBB(object):
     def __init__(self):
         self.b = 2
 
 
-class ClassB2(object):
+class ClassBB2(object):
     pass

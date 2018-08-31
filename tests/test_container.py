@@ -19,6 +19,35 @@ def test_container():
     assert 2 == container.packageB.ClassB.b
 
 
+def test_container_level_2():
+    """Ensure nesting works at multiple levels."""
+    container = PackageTree(
+        module='TopLevelPackage', root=None, directory="tests"
+    )
+
+    assert "ClassBB", "ClassBB2" in container.packageB.packageBB.classes.keys()
+
+
+def test_container_level_3():
+    """Ensure nesting works at multiple levels."""
+    container = PackageTree(
+        module='TopLevelPackage', root=None, directory="tests"
+    )
+
+    keys = container.packageB.packageBB.packageBBB.classes.keys()
+    assert "ClassBBB", "ClassBBB2" in keys
+
+
+def test_container_level_4():
+    """Ensure nesting works at multiple levels."""
+    container = PackageTree(
+        module='TopLevelPackage', root=None, directory="tests"
+    )
+
+    keys = container.packageB.packageBB.packageBBB.packageBBBB.classes.keys()
+    assert "ClassBBBB", "ClassBBBB2" in keys
+
+
 def test_multiple_containers():
     """Ensure that 2 PackageTree objects do not share any state."""
     container = PackageTree(
