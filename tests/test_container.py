@@ -88,3 +88,38 @@ def test_container_attribute_not_present():
         container.foobar
 
     assert "foobar is not an imported Subpackage or Class." == str(e.value)
+
+
+def test_from_subpackage():
+    """Build the package tree from a package inside another.
+    """
+    container = PackageTree(
+        module='packageB', root='TopLevelPackage', directory="tests"
+    )
+
+    assert 2 == len(container.classes)
+    assert 1 == len(container.subpackages)
+
+
+def test_from_subpackage_level_2():
+    """Build the package tree from a package inside another.
+    """
+    container = PackageTree(
+        module='packageBB', root='TopLevelPackage.packageB', directory="tests"
+    )
+
+    assert 2 == len(container.classes)
+    assert 1 == len(container.subpackages)
+
+
+def test_from_subpackage_level_3():
+    """Build the package tree from a package inside another.
+    """
+    container = PackageTree(
+        module='packageBBB',
+        root='TopLevelPackage.packageB.packageBB',
+        directory="tests"
+    )
+
+    assert 2 == len(container.classes)
+    assert 1 == len(container.subpackages)

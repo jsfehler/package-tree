@@ -28,7 +28,12 @@ class PackageTree(object):
         self.module = module
         self.root = root
         directory = directory or ""
-        self.directory = "{}/{}".format(directory, self.module)
+
+        self.full_directory = self._get_full_directory(
+            self.module,
+            self.root,
+            directory
+        )
 
         if root is not None:
             self.module = ".{}".format(module)
@@ -38,10 +43,46 @@ class PackageTree(object):
 
         self._gather_subpackages()
 
+    def _get_full_directory(self, module, root, directory):
+        """Build a full directory path from the module and directory.
+        This path is used to glob for Python packages.
+        """
+        rv = module
+
+        format_args = []
+        d_format = ""
+        r_format = ""
+        dir_parts = directory.split('/')
+
+        if directory is not None:
+            module_parts = module.split('.')
+            m_u = [item for item in module_parts if item not in dir_parts]
+            module_path = '/'.join(m_u)
+
+            d_format = "{}/"
+            format_args.append(directory)
+
+        if root is not None:
+            root_parts = root.split('.')
+            r_u = [item for item in root_parts if item not in dir_parts]
+            root_parts = '/'.join(r_u)
+
+            r_format = "{}/"
+            format_args.append(root_parts)
+
+        # Always add module_path
+        format_args.append(module_path)
+
+        format_string = d_format + r_format + "{}"
+
+        rv = format_string.format(*format_args).replace('.', '/')
+        rv = rv.replace('//', '/')
+        return rv
+
     def __repr__(self):
         m = self.module
         r = self.root
-        d = self.directory
+        d = self.full_directory
         return f"PackageTree(module={m}, root={r}, directory={d})"
 
     def __import_classes(self):
@@ -54,6 +95,7 @@ class PackageTree(object):
         imported_module = importlib.import_module(
             self.module, package=self.root
         )
+
         classes = inspect.getmembers(imported_module, inspect.isclass)
         return dict(classes)
 
@@ -120,23 +162,27 @@ class PackageTree(object):
         child Container relative to the subfolder's root.
         """
         # Get all the subfolders of the root.
-        root = pathlib.Path(self.directory)
+        root = pathlib.Path(self.full_directory)
         allowed_folders = self._filter_directories(root)
 
         # If the root was a relative python path, split it into parts.
-        root_parts = self.directory.split('/')
+        if self.full_directory is not None:
+            root_parts = self.full_directory.split('/')
+        else:
+            root_parts = [self.module]
 
         for path in allowed_folders:
             parts = list(path.parts)
             for part in root_parts:
-                parts.remove(part)
+                if part in parts:
+                    parts.remove(part)
 
             parts = '.'.join(parts)
 
             child_container = PackageTree(
                 module=parts,
                 root=".".join(root_parts[1:]),
-                directory=self.directory
+                directory=self.full_directory
             )
 
             # Add each subfolder as a child of this PackageTree.
