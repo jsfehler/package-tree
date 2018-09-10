@@ -2,6 +2,10 @@ import importlib
 import inspect
 import os
 import pathlib
+import sys
+
+
+sys.path.append("./")
 
 
 class PackageTree(object):
@@ -27,7 +31,7 @@ class PackageTree(object):
     def __init__(self, module, root=None, directory=None):
         self.module = module
         self.root = root
-        directory = directory or ""
+        directory = directory
 
         self.full_directory = self._get_full_directory(
             self.module,
@@ -52,13 +56,16 @@ class PackageTree(object):
         format_args = []
         d_format = ""
         r_format = ""
-        dir_parts = directory.split('/')
+        try:
+            dir_parts = directory.split('/')
+        except AttributeError:
+            dir_parts = ''
+
+        module_parts = module.split('.')
+        m_u = [item for item in module_parts if item not in dir_parts]
+        module_path = '/'.join(m_u)
 
         if directory is not None:
-            module_parts = module.split('.')
-            m_u = [item for item in module_parts if item not in dir_parts]
-            module_path = '/'.join(m_u)
-
             d_format = "{}/"
             format_args.append(directory)
 
@@ -181,7 +188,7 @@ class PackageTree(object):
 
             child_container = PackageTree(
                 module=parts,
-                root=".".join(root_parts[1:]),
+                root=".".join(root_parts),
                 directory=self.full_directory
             )
 
