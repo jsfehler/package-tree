@@ -4,6 +4,9 @@ import os
 import pathlib
 
 
+sys.path.append("./")
+
+
 class PackageTree(object):
     """Represents a Package, including the Subpackages and Classes inside it.
 
