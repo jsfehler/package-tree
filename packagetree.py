@@ -60,7 +60,7 @@ class PackageTree(object):
         module_parts = module.split('.')
         m_u = [item for item in module_parts if item not in dir_parts]
         module_path = '/'.join(m_u)
-    
+
         if directory is not None:
             d_format = "{}/"
             format_args.append(directory)
