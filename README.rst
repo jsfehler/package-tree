@@ -17,6 +17,7 @@ Sub-packages become child PackageTree instances of the root PackageTree.
 
 Classes in a package become attributes of the PackageTree.
 
+The package must be available on the python path and able to be imported.
     
 Example:
 
@@ -24,13 +25,16 @@ Example:
 
     RootPackage:
         packageA:
-            - ClassA
-            - ClassAB
+            moduleA.py
+                - ClassA
+                - ClassAB
             packageAA:
-                - ClassAA
+                moduleAA.py
+                    - ClassAA
         packageB:
-            - ClassB
-            - ClassBC
+            moduleB.py
+                - ClassB
+                - ClassBC
 
 Will become:
 
