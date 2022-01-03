@@ -28,6 +28,7 @@ class PackageTree(object):
         directory - Directory where the package is located,
             relative to the current working directory.
     """
+
     def __init__(self, module, root=None, directory=None):
         self.module = module
         self.root = root
@@ -36,7 +37,7 @@ class PackageTree(object):
         self.full_directory = self._get_full_directory(
             self.module,
             self.root,
-            directory
+            directory,
         )
 
         if root is not None:
@@ -100,7 +101,7 @@ class PackageTree(object):
             dict: Classes in the module.
         """
         imported_module = importlib.import_module(
-            self.module, package=self.root
+            self.module, package=self.root,
         )
 
         classes = inspect.getmembers(imported_module, inspect.isclass)
@@ -127,8 +128,8 @@ class PackageTree(object):
 
         raise AttributeError(
             '{attr} is not an imported Subpackage or Class.'.format(
-                **locals()
-            )
+                **locals(),
+            ),
         )
 
     def _filter_directories(self, root):
@@ -189,7 +190,7 @@ class PackageTree(object):
             child_container = PackageTree(
                 module=parts,
                 root=".".join(root_parts),
-                directory=self.full_directory
+                directory=self.full_directory,
             )
 
             # Add each subfolder as a child of this PackageTree.

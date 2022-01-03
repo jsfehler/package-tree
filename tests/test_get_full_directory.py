@@ -8,7 +8,7 @@ def test_get_full_directory():
         None,
         module="zab",
         root=None,
-        directory="foo/bar/biz/bin/bat"
+        directory="foo/bar/biz/bin/bat",
     )
 
     assert "foo/bar/biz/bin/bat/zab" == x
@@ -21,7 +21,7 @@ def test_get_full_directory_nested_module():
         None,
         module="zab.zim",
         root=None,
-        directory="foo/bar/biz/bin/bat"
+        directory="foo/bar/biz/bin/bat",
     )
 
     assert "foo/bar/biz/bin/bat/zab/zim" == x

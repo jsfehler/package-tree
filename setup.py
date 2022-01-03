@@ -7,5 +7,5 @@ setup(
     author_email="jsfehler@gmail.com",
     license="MIT",
     url="",
-    py_modules=['packagetree']
+    py_modules=['packagetree'],
 )

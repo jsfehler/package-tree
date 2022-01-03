@@ -1,12 +1,12 @@
-import pytest
-
 from packagetree import PackageTree
+
+import pytest
 
 
 def test_container():
     """Ensure a PackageTree has the expected structure."""
     container = PackageTree(
-        module='TopLevelPackage', root=None, directory="tests"
+        module='TopLevelPackage', root=None, directory="tests",
     )
 
     assert 2 == len(container.classes)
@@ -22,7 +22,7 @@ def test_container():
 def test_container_level_2():
     """Ensure nesting works at multiple levels."""
     container = PackageTree(
-        module='TopLevelPackage', root=None, directory="tests"
+        module='TopLevelPackage', root=None, directory="tests",
     )
 
     assert "ClassBB", "ClassBB2" in container.packageB.packageBB.classes.keys()
@@ -31,7 +31,7 @@ def test_container_level_2():
 def test_container_level_3():
     """Ensure nesting works at multiple levels."""
     container = PackageTree(
-        module='TopLevelPackage', root=None, directory="tests"
+        module='TopLevelPackage', root=None, directory="tests",
     )
 
     keys = container.packageB.packageBB.packageBBB.classes.keys()
@@ -41,7 +41,7 @@ def test_container_level_3():
 def test_container_level_4():
     """Ensure nesting works at multiple levels."""
     container = PackageTree(
-        module='TopLevelPackage', root=None, directory="tests"
+        module='TopLevelPackage', root=None, directory="tests",
     )
 
     keys = container.packageB.packageBB.packageBBB.packageBBBB.classes.keys()
@@ -51,7 +51,7 @@ def test_container_level_4():
 def test_multiple_containers():
     """Ensure that 2 PackageTree objects do not share any state."""
     container = PackageTree(
-        module='TopLevelPackage', root=None, directory="tests"
+        module='TopLevelPackage', root=None, directory="tests",
     )
 
     assert 2 == len(container.classes)
@@ -61,7 +61,7 @@ def test_multiple_containers():
     assert "not_a_package" not in container.subpackages.keys()
 
     another_container = PackageTree(
-        module='AnotherTopLevelPackage', root=None, directory="tests"
+        module='AnotherTopLevelPackage', root=None, directory="tests",
     )
 
     assert 2 == len(another_container.classes)
@@ -77,11 +77,9 @@ def test_multiple_containers():
 
 
 def test_container_attribute_not_present():
-    """Ensure a PackageTree raises an error when getting a
-       non-existent attribute.
-    """
+    """Ensure a PackageTree raises an error when getting a non-existent attribute."""
     container = PackageTree(
-        module='TopLevelPackage', root=None
+        module='TopLevelPackage', root=None,
     )
 
     with pytest.raises(AttributeError) as e:
@@ -91,10 +89,9 @@ def test_container_attribute_not_present():
 
 
 def test_from_subpackage():
-    """Build the package tree from a package inside another.
-    """
+    """Build the package tree from a package inside another."""
     container = PackageTree(
-        module='packageB', root='TopLevelPackage', directory="tests"
+        module='packageB', root='TopLevelPackage', directory="tests",
     )
 
     assert 2 == len(container.classes)
@@ -102,10 +99,9 @@ def test_from_subpackage():
 
 
 def test_from_subpackage_level_2():
-    """Build the package tree from a package inside another.
-    """
+    """Build the package tree from a package inside another."""
     container = PackageTree(
-        module='packageBB', root='TopLevelPackage.packageB', directory="tests"
+        module='packageBB', root='TopLevelPackage.packageB', directory="tests",
     )
 
     assert 2 == len(container.classes)
@@ -113,12 +109,11 @@ def test_from_subpackage_level_2():
 
 
 def test_from_subpackage_level_3():
-    """Build the package tree from a package inside another.
-    """
+    """Build the package tree from a package inside another."""
     container = PackageTree(
         module='packageBBB',
         root='TopLevelPackage.packageB.packageBB',
-        directory="tests"
+        directory="tests",
     )
 
     assert 2 == len(container.classes)
